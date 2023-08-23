@@ -1,0 +1,63 @@
+apiVersion: sloth.slok.dev/v1
+kind: PrometheusServiceLevel
+metadata:
+  name: slo-istio-convergence
+  namespace: monitoring
+  labels:
+    release: prometheus
+    team: platform-engineering
+    env: prod
+spec:
+  service: "istio"
+  labels:
+    cluster: "prod-us-east-2"
+    component: "kubernetes"
+    team: "platform-engineering"
+  slos:
+    - name: "istio-agent-convergence-time"
+      objective: 99.995
+      description: "Ensure that istio agents converge quickly"
+      labels:
+        category: latency
+      sli:
+        events:
+          errorQuery: (sum(rate(istio_agent_pilot_proxy_convergence_time_count[{{.window}}])) - sum(rate(istio_agent_pilot_proxy_convergence_time_bucket{le="0.5"}[{{.window}}])))
+          totalQuery: sum(rate(istio_agent_pilot_proxy_convergence_time_count[{{.window}}]))
+      alerting:
+        name: Is
+        labels:
+          category: "availability"
+        annotations:
+          summary: "High latency detected"
+        pageAlert:
+          labels:
+            severity: critical
+        ticketAlert:
+          labels:
+            severity: warning
+    # - name: "requests-latency"
+    #   objective: 99
+    #   description: "Warn that we apiserver responses are being slow and this will affect the clients  (kubectl users, controllers...)."
+    #   labels:
+    #     category: latency
+    #   sli:
+    #     events:
+    #       errorQuery: |
+    #         (
+    #           sum(rate(apiserver_request_duration_seconds_count{verb!="WATCH"}[{{.window}}]))
+    #           -
+    #           sum(rate(apiserver_request_duration_seconds_bucket{le="0.4",verb!="WATCH"}[{{.window}}]))
+    #         )
+    #       totalQuery: sum(rate(apiserver_request_duration_seconds_count{verb!="WATCH"}[{{.window}}]))
+    #   alerting:
+    #     name: K8sApiserverLatencyAlert
+    #     labels:
+    #       category: "latency"
+    #     annotations:
+    #       runbook: "https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubeapilatencyhigh"
+    #     pageAlert:
+    #       labels:
+    #         severity: critical
+    #     ticketAlert:
+    #       labels:
+    #         severity: warning
