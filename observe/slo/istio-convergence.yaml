@@ -1,7 +1,7 @@
 apiVersion: sloth.slok.dev/v1
 kind: PrometheusServiceLevel
 metadata:
-  name: slo-istio-convergence
+  name: slo-istio
   namespace: monitoring
   labels:
     release: prometheus
@@ -26,7 +26,7 @@ spec:
       alerting:
         name: Istio proxy convergence
         labels:
-          category: "availability"
+          category: "latency"
         annotations:
           summary: "High latency detected"
         pageAlert:
@@ -35,7 +35,7 @@ spec:
         ticketAlert:
           labels:
             severity: warning
-    - name: "istio-agent-convergence-time"
+    - name: "istiod-uptime"
       objective: 99.99
       description: "Ensure that istiod is running"
       labels:
