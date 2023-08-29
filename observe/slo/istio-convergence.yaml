@@ -35,29 +35,23 @@ spec:
         ticketAlert:
           labels:
             severity: warning
-    # - name: "requests-latency"
-    #   objective: 99
-    #   description: "Warn that we apiserver responses are being slow and this will affect the clients  (kubectl users, controllers...)."
-    #   labels:
-    #     category: latency
-    #   sli:
-    #     events:
-    #       errorQuery: |
-    #         (
-    #           sum(rate(apiserver_request_duration_seconds_count{verb!="WATCH"}[{{.window}}]))
-    #           -
-    #           sum(rate(apiserver_request_duration_seconds_bucket{le="0.4",verb!="WATCH"}[{{.window}}]))
-    #         )
-    #       totalQuery: sum(rate(apiserver_request_duration_seconds_count{verb!="WATCH"}[{{.window}}]))
-    #   alerting:
-    #     name: K8sApiserverLatencyAlert
-    #     labels:
-    #       category: "latency"
-    #     annotations:
-    #       runbook: "https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubeapilatencyhigh"
-    #     pageAlert:
-    #       labels:
-    #         severity: critical
-    #     ticketAlert:
-    #       labels:
-    #         severity: warning
+    - name: "istio-agent-convergence-time"
+      objective: 99.99
+      description: "Ensure that istiod is running"
+      labels:
+        category: availability
+      sli:
+        raw:
+          errorRatioQuery: (1 - max by(app) (irate(istiod_uptime_seconds[{{.window}}])))
+      alerting:
+        name: Istio availability
+        labels:
+          category: "availability"
+        annotations:
+          summary: "Low availability detected"
+        pageAlert:
+          labels:
+            severity: critical
+        ticketAlert:
+          labels:
+            severity: warning
