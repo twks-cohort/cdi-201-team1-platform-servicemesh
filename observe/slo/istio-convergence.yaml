@@ -42,7 +42,7 @@ spec:
         category: availability
       sli:
         raw:
-          errorRatioQuery: (1 - max by(app) (irate(istiod_uptime_seconds[{{.window}}])))
+          errorRatioQuery: (1 - max by(app) (irate(istiod_uptime_seconds[{{.window}}])) or on () vector(1))
       alerting:
         name: Istio availability
         labels:
