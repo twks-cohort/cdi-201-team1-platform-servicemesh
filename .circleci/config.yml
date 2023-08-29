@@ -73,6 +73,9 @@ commands:
           name: deploy istio monitors
           command: bash scripts/deploy_monitors.sh << parameters.cluster >>
       - run:
+          name: deploy SLOs
+          command: kubectl apply -n monitoring -f observe/slo --recursive
+      - run:
           name: deploy default cluster mtls namespace
           command: kubectl apply -f tpl/lab-system-mtls-namespace.yaml
 

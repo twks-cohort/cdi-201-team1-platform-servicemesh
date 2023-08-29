@@ -24,7 +24,7 @@ spec:
           errorQuery: (sum(rate(istio_agent_pilot_proxy_convergence_time_count[{{.window}}])) - sum(rate(istio_agent_pilot_proxy_convergence_time_bucket{le="0.5"}[{{.window}}])))
           totalQuery: sum(rate(istio_agent_pilot_proxy_convergence_time_count[{{.window}}]))
       alerting:
-        name: Is
+        name: Istio proxy convergence
         labels:
           category: "availability"
         annotations:
